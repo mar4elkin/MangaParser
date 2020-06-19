@@ -6,11 +6,10 @@ public class OrganizerSelector {
     public void selectSite(String x){
        switch (x){
            case "mangaChan":
-               //do something
                 MangaChan mangaChan = new MangaChan();
                 //System.out.println(mangaChan.getTags());
                 //System.out.println(mangaChan.getPageUrls());
-                mangaChan.getPageManga("");
+                //mangaChan.getPageManga("");
 
                break;
            case "readManga":

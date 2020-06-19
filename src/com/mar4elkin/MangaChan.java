@@ -4,10 +4,14 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+
+
 
 public class MangaChan {
     public ArrayList<String> getTags() {
@@ -50,8 +54,9 @@ public class MangaChan {
         return pages;
     }
 
-    public ArrayList<String> getPageManga(String pageUrl){
-        ArrayList<String> manga = new ArrayList<String>();
+    public JSONArray getPageManga(String pageUrl){
+
+        JSONArray manga = new JSONArray();
 
         ArrayList<String> mangaImages = new ArrayList<String>();
         ArrayList<String> mangaHeaderText = new ArrayList<String>();
@@ -108,12 +113,19 @@ public class MangaChan {
             mangaStatus.remove(i + 1);
         }
 
-        //debug
-        System.out.println("images array: " + mangaImages);
-        System.out.println("HeaderText array: " + mangaHeaderText);
-        System.out.println("Authors array: " + mangaAuthors);
-        System.out.println("Manga Status array: " + mangaStatus);
-        System.out.println("Tags array: " + mangaTags);
+        //Запихиваем контент в один огромный мать его массив
+        for (int i=0; i< mangaImages.size(); i++) {
+            JSONObject subManga = new JSONObject();
+            subManga
+                    .put("img", mangaImages.get(i))
+                    .put("title", mangaHeaderText.get(i))
+                    .put("author", mangaAuthors.get(i))
+                    .put("status", mangaStatus.get(i))
+                    .put("tags", mangaTags.get(i))
+                    .toString();
+
+            manga.put(subManga);
+        }
 
         return manga;
     }
