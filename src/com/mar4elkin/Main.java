@@ -6,8 +6,9 @@ public class Main {
 
     public static void main(String[] args) throws IOException {
 
-        ConsoleReader consoleReader = new ConsoleReader();
-        String siteName = consoleReader.nameSelector();
+//        ConsoleReader consoleReader = new ConsoleReader();
+//        String siteName = consoleReader.nameSelector();
+        String siteName = "mangaChan";
 
         OrganizerSelector organizerSelector = new OrganizerSelector();
         organizerSelector.selectSite(siteName);
