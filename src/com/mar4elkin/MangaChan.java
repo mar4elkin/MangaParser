@@ -15,7 +15,7 @@ public class MangaChan {
         ArrayList<String> tags = new ArrayList<String>();
 
         try {
-            Document doc = Jsoup.connect("https://mangachan.ru/").get();
+            Document doc = Jsoup.connect("https://manga-chan.me/").get();
 
             Elements links = doc.select("div.sidetags > ul > li > a");
 
@@ -36,7 +36,7 @@ public class MangaChan {
         ArrayList<String> pages = new ArrayList<String>();
 
         try {
-            Document doc = Jsoup.connect("https://mangachan.ru/catalog.html").get();
+            Document doc = Jsoup.connect("https://manga-chan.me/catalog").get();
 
             Elements links = doc.select("div#pagination > span > a[href]");
 
@@ -53,9 +53,14 @@ public class MangaChan {
     public ArrayList<String> getPageManga(String pageUrl){
         ArrayList<String> manga = new ArrayList<String>();
 
+        ArrayList<String> mangaImages = new ArrayList<String>();
+        ArrayList<String> mangaHeaderText = new ArrayList<String>();
+        ArrayList<String> mangaAuthors = new ArrayList<String>();
+        ArrayList<String> mangaStatus = new ArrayList<String>();
+        ArrayList<String> mangaTags = new ArrayList<String>();
+
         try {
-            Document doc = Jsoup.connect(pageUrl).get();
-            //TODO Придумать как запихнуть данные в массив а запихивать я люблю 0))))
+            Document doc = Jsoup.connect("https://manga-chan.me/catalog" + pageUrl).get();
 
             //Image
             Elements linksImg = doc.select("div.content_row > div.manga_images > a > img");
@@ -63,24 +68,52 @@ public class MangaChan {
             //Header Text
             Elements linksHeaderText = doc.select("div.content_row > div.manga_row1 > div > h2 > a.title_link");
 
-            //Author TODO добавить регулярку котороая проверяет поле на пустоту датебае
-            Elements linksAuthor = doc.select("div.content_row > div.manga_row2 > div.row3_left > div.item2 > h3.item2 > a");
+            //Author датебае
+            Elements linksAuthor = doc.select("div.content_row > div.manga_row2 > div.row3_left > div.item2 > h3.item2");
 
-            //Status of toms TODO добавить атрибут текст
+            //Status of toms
             Elements status = doc.select("div.content_row > div.manga_row3 > div.row3_left > div.item2");
 
-            //Manga Tags TODO Добавить проверку на ","
-            Elements tags = doc.select("div.content_row > div.manga_row3 > div.row3_left > div.item4 > div.genre > a");
+            //Manga Tags
+            Elements tags = doc.select("div.content_row > div.manga_row3 > div.row3_left > div.item4 > div.genre");
 
+            // Дальше тырим контент с сайта
             for (Element link : linksImg) {
-                manga.add(link.attr("src"));
+                mangaImages.add(link.attr("src"));
             }
+
+            for (Element link : linksHeaderText) {
+                mangaHeaderText.add(link.text());
+            }
+
+            for (Element link : linksAuthor) {
+                mangaAuthors.add(link.text().replace(",", ""));
+            }
+
+            for (Element link : status) {
+                mangaStatus.add(link.text().replace(",", ""));
+            }
+
+            for (Element link : tags) {
+                mangaTags.add(link.text().replace(",", ""));
+            }
+
 
         } catch (IOException e) {
             e.printStackTrace();
         }
 
-        System.out.println(manga);
+        //Удаление переводчиков из массив статуса датебане
+        for (int i=0; i < mangaStatus.size(); i++) {
+            mangaStatus.remove(i + 1);
+        }
+
+        //debug
+        System.out.println("images array: " + mangaImages);
+        System.out.println("HeaderText array: " + mangaHeaderText);
+        System.out.println("Authors array: " + mangaAuthors);
+        System.out.println("Manga Status array: " + mangaStatus);
+        System.out.println("Tags array: " + mangaTags);
 
         return manga;
     }

@@ -8,7 +8,9 @@ public class OrganizerSelector {
            case "mangaChan":
                //do something
                 MangaChan mangaChan = new MangaChan();
-                mangaChan.getPageManga("https://mangachan.ru/catalog.html");
+                //System.out.println(mangaChan.getTags());
+                //System.out.println(mangaChan.getPageUrls());
+                mangaChan.getPageManga("");
 
                break;
            case "readManga":
