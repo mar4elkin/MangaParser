@@ -1,7 +1,7 @@
 package com.mar4elkin;
 
 import java.io.IOException;
-
+//TODO Удалить потом
 public class Main {
 
     public static void main(String[] args) throws IOException {
