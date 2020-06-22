@@ -2,10 +2,10 @@ package com.mar4elkin;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.jsoup.Jsoup;
@@ -141,33 +141,35 @@ public class MangaChan {
     public JSONArray getChapters(String mangaUrl){
         JSONArray chapters = new JSONArray();
         JSONArray chapterSorted = new JSONArray();
-        ArrayList <String> detailpage = new ArrayList<String>();
+        ArrayList <String> ch = new ArrayList<String>();
+        ArrayList <String> date = new ArrayList<String>();
+        ArrayList <String> href = new ArrayList<String>();
 
         try {
             Document doc = Jsoup.connect("https://manga-chan.me" + mangaUrl).get();
 
-            Elements links = doc.select("table.table_cha > tbody > tr ");
+            Elements linksChapter = doc.select("table.table_cha > tbody > tr > td > div.manga2 > a ");
+            Elements linksDate = doc.select("table.table_cha > tbody > tr > td > div.date ");
 
-            for (Element link : links) {
+            for (Element link : linksChapter) {
                 if (!link.text().equals("Название Загружено") && !link.text().equals("")) {
-                    detailpage.add(link.text());
+                    ch.add(link.text());
+                    href.add(link.attr("href"));
                 }
             }
-            for (String s : detailpage) {
-                //Что за говнокод
-                String[] dateArray = s.split("([12]\\d{3}-(0[1-9]|1[0-2])-(0[1-9]|[12]\\d|3[01]))");
 
-                Pattern pattern = Pattern.compile("([12]\\d{3}-(0[1-9]|1[0-2])-(0[1-9]|[12]\\d|3[01]))");
-                List<String> res = new ArrayList<>();
-                Matcher matcher = pattern.matcher(s);
-                while (matcher.find()) {
-                    res.add(matcher.group(0));
+            for (Element link : linksDate) {
+                if (!link.text().equals("Название Загружено") && !link.text().equals("")) {
+                    date.add(link.text());
                 }
+            }
 
+            for (int i = 0; i < ch.size(); i++) {
                 JSONObject subManga = new JSONObject();
                 subManga
-                        .put("chapterTitle", dateArray[0])
-                        .put("chapterDate", res);
+                        .put("link", href.get(i))
+                        .put("chapterTitle", ch.get(i))
+                        .put("chapterDate", date.get(i));
                 chapters.put(subManga);
             }
         } catch (IOException e) {
@@ -180,5 +182,31 @@ public class MangaChan {
         }
         return chapterSorted;
     }
+    public String[] getImageSet(String mangaImageUrl){
+        String imgJsArr = "";
+        String[] Image = new String[0];
+
+        try {
+            Document doc = Jsoup.connect("https://manga-chan.me" + mangaImageUrl).get();
+            Elements links = doc.select("script");
+
+            for (Element link : links) {
+
+                Pattern regex = Pattern.compile("(\"fullimg\":\\[)([^]]+)");
+                Matcher m = regex.matcher(link.toString());
+
+                while (m.find()) {
+                    imgJsArr = m.group(2);
+                }
+            }
+
+            Image = imgJsArr.split(",");
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return Image;
+    }
+
 
 }
