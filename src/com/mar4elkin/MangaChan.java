@@ -2,6 +2,7 @@ package com.mar4elkin;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.json.JSONArray;
@@ -191,12 +192,13 @@ public class MangaChan {
         }
         return chapterSorted;
     }
-    public String[] getImageSet(String mangaImageUrl){
+    public JSONArray getImageSet(String mangaChapterUrl){
+        JSONArray Jsonimgs = new JSONArray();
         String imgJsArr = "";
-        String[] Image = new String[0];
+        String[] Image;
 
         try {
-            Document doc = Jsoup.connect("https://manga-chan.me" + mangaImageUrl).get();
+            Document doc = Jsoup.connect("https://manga-chan.me" + mangaChapterUrl).get();
             Elements links = doc.select("script");
 
             for (Element link : links) {
@@ -210,11 +212,18 @@ public class MangaChan {
             }
 
             Image = imgJsArr.split(",");
+            int length = Image.length;
+
+            JSONObject subManga = new JSONObject();
+            subManga
+                    .put("Images", Arrays.toString(Image))
+                    .put("size", length);
+            Jsonimgs.put(subManga);
 
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return Image;
+        return Jsonimgs;
     }
 
 
