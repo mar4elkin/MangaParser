@@ -2,8 +2,6 @@ package com.mar4elkin;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.json.JSONArray;
@@ -16,9 +14,10 @@ import org.jsoup.select.Elements;
 
 
 public class MangaChan {
-    public ArrayList<String> getTags() {
-
-        ArrayList<String> tags = new ArrayList<String>();
+    public JSONArray getTags() {
+        JSONArray tags = new JSONArray();
+        ArrayList<String> tagsText = new ArrayList<String>();
+        ArrayList<String> tagsHref = new ArrayList<String>();
 
         try {
             Document doc = Jsoup.connect("https://manga-chan.me/").get();
@@ -28,12 +27,22 @@ public class MangaChan {
             for (Element link : links) {
                 boolean result = link.text().matches("([+,-])");
                 if(!result){
-                    tags.add(link.text());
+                    tagsText.add(link.text());
+                    tagsHref.add(link.attr("href"));
                 }
             }
 
         } catch (IOException e) {
             e.printStackTrace();
+        }
+
+        for (int i=0; i< tagsText.size(); i++) {
+            JSONObject subTag = new JSONObject();
+            subTag
+                    .put("text", tagsText.get(i))
+                    .put("link", tagsHref.get(i));
+
+            tags.put(subTag);
         }
 
         return tags;
